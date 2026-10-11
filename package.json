@@ -1,0 +1,4 @@
+{ "name": "uph-calc", "version": "1.0.0", "private": true, "type": "module",
+  "scripts": { "start": "node server.js", "test": "node --test test/engine.test.js test/worker.test.js",
+    "dev:cf": "wrangler dev", "deploy": "wrangler deploy" },
+  "devDependencies": { "wrangler": "^4.45.0" }, "engines": { "node": ">=20" } }

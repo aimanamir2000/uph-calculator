@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UPH Calculator</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem("uph-theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light")}catch(e){document.documentElement.dataset.theme="light"}</script>
+<style>
+:root{--bg:#fff;--fg:#1c2333;--mut:#6b7280;--line:#e2e5ec;--acc:#2563eb;--yel:#fff3a3;--red:#fecaca;--card:#f6f7fa}
+:root{color-scheme:light;--c-blue:#2563eb;--c-teal:#0d9488;--c-green:#16a34a;--c-amber:#d97706;--c-orange:#ea580c;--c-pink:#db2777;--c-purple:#7c3aed;--c-slate:#64748b}:root[data-theme=dark]{color-scheme:dark;--c-blue:#6ea0ff;--c-teal:#2dd4bf;--c-green:#4ade80;--c-amber:#fbbf24;--c-orange:#fb923c;--c-pink:#f472b6;--c-purple:#a78bfa;--c-slate:#94a3b8;--bg:#14171f;--fg:#e6e9f2;--mut:#98a0b3;--line:#2a3040;--acc:#6ea0ff;--yel:#4a4513;--red:#5c2323;--card:#1b1f2a}
+*{box-sizing:border-box}body{margin:0;font:14px system-ui,sans-serif;background:var(--bg);color:var(--fg);display:flex;flex-direction:column;min-height:100vh}
+nav{display:flex;gap:4px;padding:8px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:2}
+nav b{margin-right:12px;align-self:center}button,select,input{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
+button{cursor:pointer}button.on,button.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+main{padding:16px;max-width:1500px;margin:0 auto;width:100%;flex:1}h2{margin:.2em 0 .6em}.row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:2px}label input{width:12em}
+.wrap{overflow-x:auto}table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid var(--line);padding:2px 4px;text-align:left;white-space:nowrap}
+th{font-size:12px;color:var(--mut);position:sticky;top:0;background:var(--bg)}td input,td select{border-color:transparent;width:100%}td input:focus{border-color:var(--acc)}
+td[data-c]{color:var(--mut);text-align:left}td[data-c=n],.c{text-align:center}td[data-c=finish]{color:var(--fg);font-weight:600}
+.card{background:var(--card);border-radius:10px;padding:12px 16px;min-width:230px}.card div{display:flex;justify-content:space-between;gap:24px;padding:2px 0}
+.big{font-size:22px;font-weight:700}.err{color:#dc2626;font-weight:600}.mut{color:var(--mut)}svg{margin-top:12px}
+td input:disabled,td select:disabled{background:var(--card);color:var(--mut);cursor:not-allowed;opacity:1}h3{margin:1.3em 0 .4em}.help{max-width:860px;line-height:1.55}.help td,.help th{white-space:normal;vertical-align:top;padding:5px 8px}.help code{background:var(--card);padding:1px 5px;border-radius:4px}
+.brand{cursor:pointer}.brand:hover{color:var(--acc)}
+.sw{width:18px;height:18px;padding:0;border-radius:4px;border:1px solid var(--line);vertical-align:middle}
+#pal{position:fixed;z-index:5;display:flex;gap:6px;padding:8px;background:var(--bg);border:1px solid var(--line);border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+#pal .sw{width:22px;height:22px}.val{display:block;font-size:14px;font-weight:600;color:var(--fg);padding:4px 0}
+table.ctr th,table.ctr td{text-align:center}table.ctr th:first-child,table.ctr td:first-child{text-align:left}
+.kv{display:grid;grid-template-columns:max-content max-content minmax(0,1fr);gap:8px;align-items:center;text-align:left;justify-items:start}.kv input{width:24em;max-width:100%}
+.col{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);padding:14px 16px;text-align:left;font-size:12px;color:var(--mut)}
+footer a{color:var(--acc);text-decoration:none}footer a:hover{text-decoration:underline}
+.burger{display:none}.links{display:flex;gap:4px;flex:1}.theme{margin-left:auto}#gantt text{font:inherit}
+.help code{word-break:break-word}td input[data-t=name]{min-width:12em}
+@media(max-width:900px){.kv input{width:100%}}
+@media(max-width:720px){
+ main{padding:12px}nav{padding:8px 10px}
+ .burger{display:inline-flex;margin-left:auto;font-size:18px;line-height:1;padding:6px 12px}
+ .links{display:none;position:absolute;top:100%;left:0;right:0;flex:none;flex-direction:column;align-items:stretch;gap:4px;padding:8px 10px;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 8px 14px rgba(0,0,0,.14)}
+ nav.open .links{display:flex}.links button{text-align:left;padding:10px 12px}.theme{margin-left:0}input,select,textarea{font-size:16px}button{padding:6px 10px}
+ .steps,.steps tbody{display:block}.steps tr:not([data-r]){display:none}
+ .steps tr[data-r]{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px}
+ .steps td{display:flex;flex-direction:column;gap:3px;border:0;padding:0;white-space:normal;min-width:0;text-align:left}
+ .steps td::before{content:attr(data-l);font-size:11px;font-weight:400;color:var(--mut)}
+ .steps td.full,.steps td.act{grid-column:1/-1}
+ .steps td input,.steps td select{width:100%!important;border-color:var(--line)}
+ .steps td.act{flex-direction:row;gap:8px}.steps td.act::before{content:none}.steps td.act button{flex:1;padding:8px}
+ .steps .sw{width:30px;height:30px}
+}
+@media(max-width:600px){.hm{display:none}footer{flex-direction:column}}
+</style></head><body>
+<nav id="nav"></nav><main id="main"></main>
+<footer><span>© <span id="yr">2026</span> UPH Calculator. All rights reserved. Created by Aiman Amir.</span><a href="#" data-a="top">back to top</a></footer>
+<script type="module">
+import { schedule, summary, servoTime } from './engine.js';
+const $ = (s, e = document) => e.querySelector(s), main = $('#main');
+const api = (p, m = 'GET', b) => fetch('/api/' + p, { method: m, headers: { 'Content-Type': 'application/json' }, body: b && JSON.stringify(b) }).then(r => r.json());
+const E = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const FIRST = { 'Grippers': 'Gripper', 'Pick And Places': 'Pick & place unit', 'Servo Robots': 'Servo robot', 'Rotary Actuators': 'Rotary actuator', 'Slides': 'Slide', 'Cylinders': 'Cylinder', 'Compact Cylinders': 'Compact cylinder' };
+const dash = v => v == null || v === '' ? '-' : E(v);
+const fmt = v => v == null ? '' : +(+v).toFixed(2), num = v => v === '' || v == null ? null : +v;
+const uid = () => Math.random().toString(36).slice(2, 10), libMap = () => new Map(lib.moveTypes.map(m => [m.id, m]));
+let lib, ref, P = null, tab = 'projects', t1, t2, servo = { d: 100, v: 1000, a: 9810, s: 0.05 };
+const saveP = () => { clearTimeout(t1); t1 = setTimeout(() => api('projects/' + P.id, 'PUT', P), 400); };
+const saveL = () => { clearTimeout(t2); t2 = setTimeout(() => api('library', 'PUT', lib), 400); };
+const blank = () => ({ id: uid(), customer: '', job: '', station: '', jobNo: '', originator: '', rev: '', sf: 0.1, nUp: 1, notes: '', steps: [newStep()] });
+const newStep = () => ({ id: uid(), color: 'blue', task: '', typeId: '', dist: null, vel: null, acc: null, settle: null, ovr: null, deps: [] });
+const COLORS = ['blue', 'teal', 'green', 'amber', 'orange', 'pink', 'purple', 'slate'];
+const depsText = s => (s.deps || []).map(id => P.steps.findIndex(x => x.id === id) + 1).filter(Boolean).join(',');
+const inp = (f, v, i, w, t = 'number', dis = false) => `<input data-f="${f}" data-i="${i}" type="${t}" step="any" value="${E(v)}" style="width:${w}"${dis ? ' disabled' : ''}>`;
+
+const views = {
+  async projects() {
+    const list = (await api('projects')).sort((a, b) => b.updated - a.updated);
+    return `<h2>Projects</h2><p><button class="pri" data-a="new">+ New project</button></p><div class="wrap"><table><tr><th>Customer</th><th>Job</th><th class="hm">Modified</th><th></th></tr>` +
+      list.map(p => `<tr><td>${E(p.customer)}</td><td>${E(p.job) || '<i class=mut>Untitled</i>'}</td><td class="mut hm">${new Date(p.updated).toLocaleString()}</td>
+      <td><button data-a="open" data-id="${p.id}">Open</button> <button data-a="dup" data-id="${p.id}">Duplicate</button> <button data-a="rm" data-id="${p.id}">Delete</button></td></tr>`).join('') + '</table></div>';
+  },
+  editor() {
+    if (!P) return '<p class="mut">Open or create a project first.</p>';
+    const head = [['customer', 'Customer'], ['job', 'Job description'], ['station', 'Station'], ['jobNo', 'Job #'], ['originator', 'Originator'], ['rev', 'Rev']]
+      .map(([f, l]) => `<span>${l}</span><span>:</span><input data-f="${f}" value="${E(P[f])}">`).join('');
+    const opts = s => `<option value="">Custom</option>` + lib.moveTypes.map(m => `<option value="${m.id}" ${m.id === s.typeId ? 'selected' : ''}>${E(m.name)}</option>`).join('');
+    const rows = P.steps.map((s, i) => `<tr data-r="${i}"><td data-c="n" data-l="Step"></td><td class="c" data-l="Color"><button class="sw" data-a="color" data-i="${i}" title="Bar colour" style="background:var(--c-${s.color || 'blue'})"></button></td>
+      <td class="full" data-l="Task">${inp('task', s.task, i, '17em', 'text')}</td><td class="full" data-l="Type"><select data-f="typeId" data-i="${i}">${opts(s)}</select></td>
+      <td data-l="Dist (mm)">${inp('dist', s.dist, i, '5em', 'number', !!s.typeId)}</td><td data-l="Vel (mm/s)">${inp('vel', s.vel, i, '5em', 'number', !!s.typeId)}</td>
+      <td data-l="Accel (mm/s²)">${inp('acc', s.acc, i, '5em', 'number', !!s.typeId)}</td><td data-l="Settle (s)">${inp('settle', s.settle, i, '4em', 'number', !!s.typeId)}</td>
+      <td data-c="calc" data-l="Calc (s)"></td><td data-l="Override (s)">${inp('ovr', s.ovr, i, '5em', 'number', !s.typeId)}</td>
+      <td data-c="dur" data-l="Duration (s)"></td><td data-c="start" data-l="Start (s)"></td><td data-c="finish" data-l="Finish (s)"></td><td data-l="After steps">${inp('deps', depsText(s), i, '5em', 'text')}</td>
+      <td class="act"><button data-a="up" data-i="${i}">↑</button><button data-a="down" data-i="${i}">↓</button><button data-a="ins" data-i="${i}">+</button><button data-a="del" data-i="${i}">✕</button></td></tr>`).join('');
+    return `<h3>Project details</h3><div class="kv">${head}</div>
+    <h3>Notes</h3><textarea data-f="notes" rows="3" style="width:100%;resize:none;font:inherit;background:var(--bg);color:inherit;border:1px solid var(--line);border-radius:6px;padding:6px 8px">${E(P.notes)}</textarea>
+    <h3>Steps</h3><div id="err" class="err"></div>
+    <div class="wrap"><table class="steps"><tr><th class="c">#</th><th class="c">Color</th><th>Task</th><th>Type</th><th>Dist mm</th><th>Vel mm/s</th><th>Accel mm/s²</th><th>Settle s</th>
+    <th>Calc s</th><th>Override s</th><th>Duration</th><th>Start</th><th>Finish</th><th>After steps</th><th></th></tr>${rows}</table></div>
+    <p><button data-a="add">+ Add step</button></p>
+    <p class="mut">Type <b>Custom</b> = enter servo values (Dist / Vel / Accel / Settle). <b>Manual</b> = enter an Override time. Any other Type uses its table time and locks the servo fields. Red = no time yet.</p>
+    <h3>Timing chart</h3><div id="gantt"></div>
+    <h3>Summary</h3><div class="kv">
+    <span>Cycle time</span><span>:</span><span class="val" id="s-cycle"></span>
+    <span>Safety factor %</span><span>:</span><input data-f="sf" data-pct="1" type="number" step="any" value="${+(P.sf * 100).toFixed(2)}" style="width:7em">
+    <span>Est. cycle time</span><span>:</span><span class="val" id="s-est"></span>
+    <span># up</span><span>:</span><input data-f="nUp" type="number" value="${P.nUp}" style="width:7em">
+    <span>PPM</span><span>:</span><span class="val" id="s-ppm"></span>
+    <span>UPH</span><span>:</span><span class="val" id="s-uph"></span></div>`;
+  },
+  types() {
+    return `<h2>Move types</h2><p class="mut">Times used when a step has a Type and no servo values. Steps reference types by ID, so renaming is safe.</p><div class="wrap"><table><tr><th>Name</th><th>Time (s)</th><th></th></tr>` +
+      lib.moveTypes.map((m, i) => `<tr><td><input data-t="name" data-i="${i}" value="${E(m.name)}"></td><td><input data-t="time" data-i="${i}" type="number" step="any" value="${m.time ?? ''}" placeholder="needs override"></td>
+      <td><button data-a="rmtype" data-i="${i}">✕</button></td></tr>`).join('') + `</table></div><p><button data-a="addtype">+ Add type</button></p>
+      <p class="mut">Assumptions from the original: servo moves use 1 g accel, 1 m/s max speed, 50 ms settling, trapezoidal profile. Pneumatic times are rough estimates.</p>`;
+  },
+  reference() {
+    return `<h2>Motion reference</h2><p><input id="q" placeholder="Filter (e.g. gripper, MXS)" style="width:20em;max-width:100%"></p>` + ref.map(s => `<h3>${E(s.title)}</h3><div class="wrap"><table class="ctr">
+      <tr><th>${E(FIRST[s.title] || 'Item')}</th>${s.headers.map(h => `<th>${dash(h)}</th>`).join('')}</tr>${s.rows.map(r => `<tr class="rf">${r.map((c, i) => `<td>${dash(c)}</td>`).join('')}</tr>`).join('')}</table></div>`).join('');
+  },
+  servo() {
+    const f = (k, l) => `<span>${l}</span><span>:</span><input data-s="${k}" type="number" step="any" value="${servo[k]}">`;
+    return `<h2>Servo move calculator</h2><div class="kv">${f('d', 'Distance (mm)')}${f('v', 'Max velocity (mm/s)')}${f('a', 'Accel (mm/s²)')}${f('s', 'Settling (s)')}</div>
+    <p class="big" id="sv"></p><p class="mut">Trapezoidal profile; falls back to triangular when the move is too short to reach max velocity. 1 g = 9810 mm/s².</p>`;
+  },
+  help() {
+    return `<div class="help"><h2>How it works</h2>
+    <p>UPH Calculator turns a list of machine-cycle steps into a <b>cycle time</b>, <b>parts per minute (PPM)</b> and <b>units per hour (UPH)</b>, and draws the timing chart (Gantt) so you can see which steps run in parallel and which ones set the pace. It is the web version of the UPH Calc Excel workbook.</p>
+
+    <h3>1. Quick start</h3>
+    <ol><li><b>Projects</b> tab → <b>+ New project</b> (or open a sample).</li>
+    <li>In the <b>Editor</b>, add one row per machine action, in the order they normally happen.</li>
+    <li>For each step give a time: pick a <b>Type</b>, or enter servo values, or type an <b>Override</b>.</li>
+    <li>Use <b>After steps</b> to run steps in parallel. Read cycle time and UPH under the timing chart.</li></ol>
+    <p class="mut">Everything saves automatically a moment after you stop typing.</p>
+
+    <h3>2. Projects tab</h3>
+    <p>One project = one machine / station analysis (one tab of the old workbook). You can create, open, duplicate (handy for "what if" versions) and delete projects. The list is sorted by last modified.</p>
+
+    <h3>3. Editor tab</h3>
+    <p><b>Header</b>: customer, job description, station, job #, originator, rev. These are labels only and do not affect the maths. A free-text <b>Notes</b> field sits below them.</p>
+    <p><b>Step grid</b>, column by column:</p>
+    <table><tr><th>Column</th><th>Meaning</th></tr>
+    <tr><td>#</td><td>Step number (automatic). Used by "After steps".</td></tr>
+    <tr><td>Color</td><td>Colour of this step's bar on the timing chart. Click the box and pick from the fixed palette (blue is the default). Purely visual.</td></tr>
+    <tr><td>Task</td><td>Free-text description, shown on the Gantt chart.</td></tr>
+    <tr><td>Type</td><td>A move type from the <b>Move types</b> table (e.g. Pneumatic 25 mm, Servo 100-200 mm). Its time is used as the step's calculated time. <b>Custom</b> lets you enter servo values and disables Override; <b>Manual</b> lets you type an Override time; any other type uses its table time and locks (and clears) the servo fields.</td></tr>
+    <tr><td>Dist, Vel, Accel, Settle</td><td>Servo move inputs: distance (mm), max velocity (mm/s), acceleration (mm/s², 1 g = 9810), settling time (s). Only editable when Type is Custom.</td></tr>
+    <tr><td>Calc s</td><td>Read-only calculated time: servo formula if Accel &gt; 0, otherwise the Type's table time. Empty if neither applies.</td></tr>
+    <tr><td>Override s</td><td>Your own time in seconds (vendor data, measured, estimate). <b>Always wins</b> over Calc. Yellow when set. Only editable when Type is not Custom.</td></tr>
+    <tr><td>Duration</td><td>The time actually used: Override, else Calc, else 0.</td></tr>
+    <tr><td>Start / Finish</td><td>Read-only schedule results, in seconds from the start of the cycle.</td></tr>
+    <tr><td>After steps</td><td>Step numbers this step must wait for, e.g. <code>3,5</code> (see Scheduling below).</td></tr>
+    <tr><td>Buttons</td><td>↑ ↓ move the row, + inserts a row below, ✕ deletes it. Dependencies follow the steps, so reordering never breaks them.</td></tr></table>
+
+    <p><b>How a step's duration is decided</b> (first match wins):</p>
+    <ol><li><b>Override</b> is filled in → use it.</li>
+    <li><b>Accel &gt; 0</b> (Type = Custom) → servo trapezoid: if <code>v²/a ≥ d</code> the move never reaches full speed, so <code>t = 2·√(d/a)</code>; otherwise <code>t = (d − v²/a)/v + 2v/a</code>. Settling time is added.</li>
+    <li>A <b>Type</b> is selected → its time from the Move types table.</li>
+    <li>Otherwise 0 s. A step with a Task but no usable time (e.g. Type <i>Manual</i> with no Override) turns <b>red</b> in the grid and on the chart: give it an Override.</li></ol>
+
+    <p><b>Scheduling</b></p>
+    <ul><li>A step with <b>no</b> "After steps" starts when the <b>previous row</b> finishes (normal sequential flow).</li>
+    <li>A step with "After steps" starts when the <b>latest finishing</b> of the listed steps is done. Use this to model parallel actions (e.g. step 3 runs <i>after step 1</i> while step 2 runs at the same time).</li>
+    <li>Circular references (step A waits for B, B waits for A) are detected and shown as an error message above the grid.</li></ul>
+
+    <p><b>Timing chart</b>: one bar per step, positioned by Start and sized by Duration. Hover a bar for exact times. Bars that overlap run in parallel.</p>
+
+    <p><b>Summary</b> (under the chart):</p>
+    <ul><li><b>Cycle time</b> = the latest Finish of any step.</li>
+    <li><b>Safety factor %</b> = allowance for real-world losses (default 10 %). <b>Est. cycle time</b> = cycle time × (1 + safety factor).</li>
+    <li><b># up</b> = parts produced per cycle.</li>
+    <li><b>PPM</b> = # up × 60 ÷ est. cycle time. <b>UPH</b> = PPM × 60.</li></ul>
+
+    <p><b>Worked example</b>: step 1 override 2 s; step 2 override 3 s; step 3 override 4 s with After steps = <code>1</code>. Step 1 runs 0-2, step 2 runs 2-5, step 3 starts when step 1 ends so it runs 2-6 in parallel with step 2. Cycle time = 6 s. With 10 % safety: 6.6 s. With 2-up: PPM = 2 × 60 ÷ 6.6 = 18.18, UPH = 1,091.</p>
+
+    <h3>4. Move types tab</h3>
+    <p>The lookup table of typical times used by the Type dropdown. Edit any name or time, add or delete types. Changes apply to all projects immediately. Steps reference types by an internal ID, so renaming a type is safe. A type without a time (like <i>Manual</i>) forces an Override. Original assumptions: servo moves at 1 g and 1 m/s with 50 ms settling; pneumatic times are rough estimates.</p>
+
+    <h3>5. Motion reference tab</h3>
+    <p>Read-only vendor timing data (grippers, pick-and-place units, slides, cylinders, rotary...). Use the filter box to search, then copy a value into a step's <b>Override</b> field.</p>
+
+    <h3>6. Servo calc tab</h3>
+    <p>A scratch calculator for a single servo move: enter distance, max velocity, acceleration and settling to get the move time using the same formula as the Editor. Nothing is saved.</p>
+
+    <h3>7. Theme</h3>
+    <p>The button at the right of the top bar switches between light and dark mode. Your choice is remembered in this browser; the first time it follows your system setting.</p>
+
+    <h3>8. Where your data lives</h3>
+    <p>Projects and the move-types table are stored as JSON files in the Docker volume mounted at <code>/data</code> (<code>projects/*.json</code> and <code>library.json</code>). Rebuilding or restarting the container does not touch them. The README explains how to back up and restore the volume. The Motion reference table ships with the app and is not editable.</p>
+
+    <h3>9. Troubleshooting</h3>
+    <table><tr><th>You see</th><th>Why</th></tr>
+    <tr><td>Red row / red bar</td><td>The step has a Task but no time. Choose Type Manual and add an Override, or choose a Type that has a time.</td></tr>
+    <tr><td>Dist / Vel / Accel / Settle greyed out</td><td>A Type is selected. Set Type to "Custom" to enter servo values.</td></tr>
+    <tr><td>Override greyed out</td><td>Type is Custom. Choose Manual (or another Type) to use an Override.</td></tr>
+    <tr><td>"Circular dependency" error</td><td>Two or more steps wait on each other. Fix the After steps values.</td></tr>
+    <tr><td>Step starts later than expected</td><td>Steps with no After steps wait for the previous row. Add After steps to start it earlier.</td></tr>
+    <tr><td>Calc is empty</td><td>No Type, or the Type has no time, and Accel is 0.</td></tr></table></div>`;
+  },
+};
+const navItems = [['projects', 'Projects'], ['editor', 'Editor'], ['types', 'Move types'], ['reference', 'Motion reference'], ['servo', 'Servo calc'], ['help', 'How it works']];
+const themeLabel = () => document.documentElement.dataset.theme === 'dark' ? '☀ Light' : '☾ Dark';
+async function go(t) {
+  tab = t; $('#nav').classList.remove('open'); $('#nav').innerHTML = '<b class="brand" data-a="go" data-t="projects" title="Projects">UPH Calc</b><button class="burger" data-a="menu" aria-label="Menu" aria-expanded="false">☰</button><div class="links">' + navItems.map(([k, l]) => `<button data-a="go" data-t="${k}" class="${k === t ? 'on' : ''}">${l}</button>`).join('') + `<button class="theme" data-a="theme">${themeLabel()}</button></div>`;
+  main.innerHTML = await views[t](); if (t === 'editor' && P) recalc(); if (t === 'servo') calcServo();
+}
+function calcServo() { const t = servoTime(servo.d, servo.v, servo.a, servo.s); $('#sv').textContent = t == null ? 'Velocity and accel must be > 0' : `Move time: ${t.toFixed(3)} s`; }
+function recalc() {
+  const { rows, error } = schedule(P.steps, libMap()), sm = summary(rows, P.sf, P.nUp), set = (id, v) => $(id).textContent = v;
+  $('#err').textContent = error || '';
+  rows.forEach((x, i) => {
+    const tr = $(`tr[data-r="${i}"]`); if (!tr) return;
+    tr.querySelector('[data-c=n]').textContent = i + 1;
+    for (const k of ['calc', 'dur', 'start', 'finish']) tr.querySelector(`[data-c=${k}]`).textContent = fmt(x[k]);
+    tr.querySelector('[data-f=ovr]').style.background = x.warn ? 'var(--red)' : P.steps[i].ovr != null ? 'var(--yel)' : '';
+  });
+  set('#s-cycle', fmt(sm.cycle) + ' s'); set('#s-est', fmt(sm.est) + ' s'); set('#s-ppm', fmt(sm.ppm)); set('#s-uph', fmt(sm.uph));
+  const GW = Math.max($('#gantt').clientWidth || 900, 300), L = GW < 600 ? 130 : 260, W = GW - L - 20, T = Math.max(sm.cycle, 1), H = 24, tick = Math.pow(10, Math.floor(Math.log10(T))) * (T / Math.pow(10, Math.floor(Math.log10(T))) > 5 ? 2 : 1);
+  let g = ''; for (let x = 0; x <= T; x += tick) g += `<line x1="${L + x / T * W}" x2="${L + x / T * W}" y1="0" y2="${rows.length * H}" stroke="var(--line)"/><text x="${L + x / T * W}" y="${rows.length * H + 18}" fill="var(--mut)" text-anchor="middle">${+x.toFixed(2)}s</text>`;
+  $('#gantt').innerHTML = `<svg viewBox="0 0 ${L + W + 20} ${rows.length * H + 26}" width="100%">${g}` + rows.map((r, i) => `<text x="0" y="${i * H + 17}" fill="currentColor">${r.n}. ${E((P.steps[i].task || '').slice(0, Math.floor((L - 8) / 7.6)))}</text>
+    <rect x="${L + r.start / T * W}" y="${i * H + 4}" width="${Math.max(r.dur / T * W, 1.5)}" height="16" rx="2" fill="${r.warn ? '#ef4444' : `var(--c-${P.steps[i].color || 'blue'})`}"><title>${fmt(r.start)} → ${fmt(r.finish)} s</title></rect>`).join('') + '</svg>';
+}
+main.addEventListener('input', e => {
+  const t = e.target, f = t.dataset.f, i = t.dataset.i;
+  if (t.id === 'q') { const q = t.value.toLowerCase(); document.querySelectorAll('.rf').forEach(r => r.hidden = !r.textContent.toLowerCase().includes(q)); return; }
+  if (t.dataset.s) { servo[t.dataset.s] = +t.value; return calcServo(); }
+  if (t.dataset.t) { const m = lib.moveTypes[i]; m[t.dataset.t] = t.dataset.t === 'time' ? num(t.value) : t.value; return saveL(); }
+  if (!f || !P) return;
+  if (i == null) P[f] = t.dataset.pct ? (num(t.value) ?? 0) / 100 : t.type === 'number' ? (num(t.value) ?? 1) : t.value;
+  else { const s = P.steps[i]; s[f] = f === 'deps' ? t.value.split(/[ ,]+/).map(n => P.steps[n - 1]?.id).filter(Boolean) : ['task', 'typeId'].includes(f) ? t.value : num(t.value);
+    if (f === 'typeId') { if (t.value) Object.assign(s, { dist: null, vel: null, acc: null, settle: null }); else s.ovr = null; saveP(); return go('editor'); } }
+  recalc(); saveP();
+});
+document.addEventListener('click', async e => {
+  if (!e.target.closest('nav')) $('#nav').classList.remove('open');
+  if (!e.target.closest('#pal, [data-a=color]')) $('#pal')?.remove();
+  const b = e.target.closest('[data-a]'); if (!b) return; const a = b.dataset.a, i = +b.dataset.i, S = P?.steps;
+  if (a === 'menu') { const n = $('#nav'); n.classList.toggle('open'); const o = n.classList.contains('open'); b.setAttribute('aria-expanded', o); b.textContent = o ? '✕' : '☰'; return; }
+  if (a === 'top') { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+  if (a === 'color') {
+    $('#pal')?.remove(); const r = b.getBoundingClientRect(), d = document.createElement('div'); d.id = 'pal'; d.dataset.i = i;
+    d.style.cssText = `left:${Math.max(8, Math.min(r.left, innerWidth - 250))}px;top:${r.bottom + 4}px`;
+    d.innerHTML = COLORS.map(k => `<button class="sw" data-a="pick" data-k="${k}" title="${k}" style="background:var(--c-${k})"></button>`).join('');
+    document.body.appendChild(d); return;
+  }
+  if (a === 'pick') { const d = $('#pal'), j = +d.dataset.i; P.steps[j].color = b.dataset.k; d.remove(); $(`tr[data-r="${j}"] .sw`).style.background = `var(--c-${b.dataset.k})`; recalc(); saveP(); return; }
+  if (a === 'new') { P = blank(); await api('projects/' + P.id, 'PUT', P); return go('editor'); }
+  if (a === 'open') { P = await api('projects/' + b.dataset.id); return go('editor'); }
+  if (a === 'dup') { const c = await api('projects/' + b.dataset.id); c.id = uid(); c.job += ' (copy)'; await api('projects/' + c.id, 'PUT', c); return go('projects'); }
+  if (a === 'rm') { if (confirm('Delete this project?')) { await api('projects/' + b.dataset.id, 'DELETE'); if (P?.id === b.dataset.id) P = null; go('projects'); } return; }
+  if (a === 'theme') { const d = document.documentElement; d.dataset.theme = d.dataset.theme === 'dark' ? 'light' : 'dark'; try { localStorage.setItem('uph-theme', d.dataset.theme); } catch {} b.textContent = themeLabel(); return; }
+  if (a === 'addtype') { lib.moveTypes.push({ id: uid(), name: 'New type', time: null }); saveL(); return go('types'); }
+  if (a === 'rmtype') { lib.moveTypes.splice(i, 1); saveL(); return go('types'); }
+  if (a === 'add') S.push(newStep());
+  if (a === 'ins') S.splice(i + 1, 0, newStep());
+  if (a === 'del') { const [x] = S.splice(i, 1); S.forEach(s => s.deps = s.deps.filter(d => d !== x.id)); if (!S.length) S.push(newStep()); }
+  if (a === 'up' && i > 0) [S[i - 1], S[i]] = [S[i], S[i - 1]];
+  if (a === 'down' && i < S.length - 1) [S[i + 1], S[i]] = [S[i], S[i + 1]];
+  if (['add', 'ins', 'del', 'up', 'down'].includes(a)) { saveP(); return go('editor'); }
+  if (a === 'go') go(b.dataset.t);
+});
+let rz; window.addEventListener('resize', () => { $('#pal')?.remove(); clearTimeout(rz); rz = setTimeout(() => { if (tab === 'editor' && P) recalc(); }, 150); });
+window.addEventListener('scroll', () => $('#pal')?.remove(), { passive: true });
+$('#yr').textContent = new Date().getFullYear();
+[lib, ref] = await Promise.all([api('library'), api('reference')]);
+const oth = lib.moveTypes.find(m => m.id === 'other'); if (oth && oth.name === 'Other') { oth.name = 'Manual'; saveL(); }
+go('projects');
+</script></body></html>

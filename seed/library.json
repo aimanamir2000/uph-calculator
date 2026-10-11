@@ -1,0 +1,98 @@
+{
+ "moveTypes": [
+  {
+   "id": "other",
+   "name": "Manual",
+   "time": null
+  },
+  {
+   "id": "pneumatic-25-mm",
+   "name": "Pneumatic < 25 mm",
+   "time": 0.2
+  },
+  {
+   "id": "pneumatic-25-100-mm",
+   "name": "Pneumatic 25 - 100 mm",
+   "time": 0.4
+  },
+  {
+   "id": "pneumatic-100-200-mm",
+   "name": "Pneumatic 100 - 200 mm",
+   "time": 0.6
+  },
+  {
+   "id": "pneumatic-200-400-mm",
+   "name": "Pneumatic 200 - 400 mm",
+   "time": 1
+  },
+  {
+   "id": "servo-25-mm",
+   "name": "Servo < 25 mm",
+   "time": 0.15,
+   "vel": 1000,
+   "acc": 9810,
+   "settle": 0.05
+  },
+  {
+   "id": "servo-25-100-mm",
+   "name": "Servo 25 - 100 mm",
+   "time": 0.3,
+   "vel": 1000,
+   "acc": 9810,
+   "settle": 0.05
+  },
+  {
+   "id": "servo-100-200-mm",
+   "name": "Servo 100 - 200 mm",
+   "time": 0.5,
+   "vel": 1000,
+   "acc": 9810,
+   "settle": 0.05
+  },
+  {
+   "id": "servo-200-400-mm",
+   "name": "Servo 200 - 400 mm",
+   "time": 0.75,
+   "vel": 1000,
+   "acc": 9810,
+   "settle": 0.05
+  },
+  {
+   "id": "servo-400-750-mm",
+   "name": "Servo 400 - 750 mm",
+   "time": 1,
+   "vel": 1000,
+   "acc": 9810,
+   "settle": 0.05
+  },
+  {
+   "id": "servo-750-1000-mm",
+   "name": "Servo 750 - 1000 mm",
+   "time": 1.5,
+   "vel": 1000,
+   "acc": 9810,
+   "settle": 0.05
+  },
+  {
+   "id": "rotary-30-90deg",
+   "name": "Rotary 30 - 90Deg",
+   "time": 0.5
+  },
+  {
+   "id": "rotary-90-180deg",
+   "name": "Rotary 90 - 180Deg",
+   "time": 0.75
+  },
+  {
+   "id": "vacuum",
+   "name": "Vacuum",
+   "time": 0.5
+  },
+  {
+   "id": "vision-snap-process",
+   "name": "Vision Snap & Process",
+   "time": 0.5
+  }
+ ],
+ "version": 2
+}

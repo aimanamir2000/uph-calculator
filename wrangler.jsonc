@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Must match the Worker name in the Cloudflare dashboard when using Workers Builds (GitHub deploys).
+  "name": "uph-calculator",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-06-01",
+  "assets": { "directory": "./public", "binding": "ASSETS" },
+  // No database_id: Wrangler (>= 4.45) creates the D1 database on first deploy.
+  "d1_databases": [{ "binding": "DB", "database_name": "uph-calculator" }]
+}
